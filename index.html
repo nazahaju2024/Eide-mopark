@@ -18,27 +18,27 @@
     
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --accent-color: #c0392b;
-            --success-color: #27ae60;
+            --primary-color: #0f3b5e; /* لون أزرق غامق يتناسب مع تصميم النادي */
+            --accent-color: #1a5c8c;
+            --success-color: #28a745;
             --share-color: #8e44ad;
-            --copy-color: #d35400;
-            --invite-color: #2980b9;
+            --copy-color: #e67e22;
+            --invite-color: #d35400;
             --glass-bg: rgba(255, 255, 255, 0.85);
             --glass-border: rgba(255, 255, 255, 0.6);
-            --text-color: #2c3e50;
+            --text-color: #0f3b5e;
             --input-bg: rgba(255, 255, 255, 0.95);
             --bg-overlay: rgba(240, 244, 248, 0.88);
         }
 
         body.dark-mode {
-            --primary-color: #ecf0f1;
-            --accent-color: #e74c3c;
-            --glass-bg: rgba(44, 62, 80, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --primary-color: #3498db;
+            --accent-color: #2980b9;
+            --glass-bg: rgba(20, 32, 48, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.15);
             --text-color: #ffffff;
-            --input-bg: rgba(52, 73, 94, 0.95);
-            --bg-overlay: rgba(30, 40, 50, 0.92);
+            --input-bg: rgba(30, 42, 58, 0.95);
+            --bg-overlay: rgba(11, 19, 30, 0.92);
         }
 
         body {
@@ -58,52 +58,186 @@
             transition: background 0.3s ease;
         }
 
-        #bgCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        #bgCanvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
 
         #loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f4f8; z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #f0f4f8;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
         }
-        .loader-pulse { font-size: 22px; font-weight: 700; color: var(--primary-color); animation: pulse-text 1.5s infinite ease-in-out; margin-bottom: 15px; }
-        .spinner { width: 40px; height: 40px; border: 4px solid rgba(44, 62, 80, 0.1); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s infinite linear; }
-        @keyframes pulse-text { 0%, 100% { transform: scale(0.98); opacity: 0.6; } 50% { transform: scale(1.02); opacity: 1; } }
+        .loader-pulse {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            animation: pulse-text 1.5s infinite ease-in-out;
+            margin-bottom: 15px;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(15, 59, 94, 0.1);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+        }
+        @keyframes pulse-text {
+            0%, 100% { transform: scale(0.98); opacity: 0.6; }
+            50% { transform: scale(1.02); opacity: 1; }
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .top-controls { position: fixed; top: 20px; width: calc(100% - 40px); max-width: 440px; display: flex; justify-content: flex-end; z-index: 1000; pointer-events: none; }
-        .control-btn { background: var(--primary-color); color: white; border: none; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all 0.3s ease; pointer-events: auto; }
+        .top-controls {
+            position: fixed;
+            top: 20px;
+            width: calc(100% - 40px);
+            max-width: 440px;
+            display: flex;
+            justify-content: flex-end;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        .control-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            pointer-events: auto;
+        }
         .control-btn:hover { transform: scale(1.1); }
 
         .container {
-            width: 100%; max-width: 440px; background: var(--glass-bg); backdrop-filter: blur(25px); border: 1px solid var(--glass-border);
-            padding: 35px 20px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1); box-sizing: border-box;
+            width: 100%;
+            max-width: 440px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            padding: 35px 20px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            animation: containerFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        @keyframes containerFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        h2 { color: var(--text-color); margin-top: 0; margin-bottom: 25px; font-size: 22px; font-weight: 700; }
+        h2 {
+            color: var(--text-color);
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 22px;
+            font-weight: 700;
+        }
 
         input[type="text"] {
-            width: 100%; padding: 16px; font-size: 16px; border: 2px solid rgba(44, 62, 80, 0.15); border-radius: 14px;
-            margin-bottom: 22px; outline: none; background: var(--input-bg); color: var(--text-color); text-align: center;
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            font-family: 'Tajawal', sans-serif;
+            border: 2px solid rgba(15, 59, 94, 0.15);
+            border-radius: 14px;
+            margin-bottom: 22px;
+            outline: none;
+            background: var(--input-bg);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        input[type="text"]:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(26, 92, 140, 0.25);
         }
 
-        .buttons-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            width: 100%;
+        }
         .buttons-grid.two-cols { grid-template-columns: 1fr 1fr; }
 
         button {
-            border: none; padding: 14px 10px; font-size: 16px; font-weight: 700; border-radius: 12px; cursor: pointer;
-            transition: all 0.3s ease; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; color: white;
+            border: none;
+            padding: 14px 10px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Tajawal', sans-serif;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        button:hover { transform: translateY(-2px); }
+        button:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
+        button:active { transform: translateY(1px); }
 
         .btn-primary { background-color: var(--accent-color); font-size: 18px; padding: 15px; }
+        .btn-primary:hover { background-color: var(--primary-color); }
         .btn-success { background-color: var(--success-color); }
         .btn-share { background-color: var(--share-color); }
         .btn-copy { background-color: var(--copy-color); }
         .btn-invite { background-color: var(--invite-color); }
-        .btn-secondary { background-color: #7f8c8d; }
+        .btn-secondary { background-color: #6c757d; }
 
-        .tilt-wrapper { perspective: 1000px; margin: 15px 0 25px 0; display: inline-block; width: 100%; }
-        canvas#canvas { width: 100%; height: auto; border-radius: 18px; box-shadow: 0 12px 28px rgba(0,0,0,0.18); transition: transform 0.1s ease-out; }
+        .pulse-anim { animation: pulse-button 2s infinite; }
+        @keyframes pulse-button {
+            0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+        }
+        .btn-share.pulse-anim { animation-name: pulse-share; }
+        @keyframes pulse-share {
+            0% { box-shadow: 0 0 0 0 rgba(142, 68, 173, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(142, 68, 173, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(142, 68, 173, 0); }
+        }
+
+        .tilt-wrapper {
+            perspective: 1000px;
+            margin: 15px 0 25px 0;
+            display: inline-block;
+            width: 100%;
+        }
+        canvas#canvas {
+            width: 100%;
+            height: auto;
+            border-radius: 18px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+            transition: transform 0.1s ease-out;
+            transform-style: preserve-3d;
+        }
+
         #resultPage { display: none; }
+
     </style>
 </head>
 <body>
@@ -127,15 +261,31 @@
 
     <div id="resultPage" class="container">
         <h2>كل عام وأنت بخير! 🎉</h2>
+        
         <div class="tilt-wrapper" id="tiltContainer">
             <canvas id="canvas"></canvas>
         </div>
+        
         <div class="buttons-grid two-cols">
-            <button class="btn-share" onclick="shareCard()">مشاركة البطاقة</button>
-            <button class="btn-success" onclick="downloadImage()">تحميل الصورة</button>
+            <button class="btn-share pulse-anim" onclick="shareCard()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                مشاركة البطاقة
+            </button>
+            <button class="btn-success pulse-anim" onclick="downloadImage()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                تحميل الصورة
+            </button>
         </div>
+        
         <div class="buttons-grid" style="margin-top: 12px;">
-            <button class="btn-copy" onclick="copyGreetingText()">نسخ نص التهنئة</button>
+            <button class="btn-copy" onclick="copyGreetingText()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                نسخ نص تهنئة جاهز
+            </button>
+            <button class="btn-invite" onclick="shareWebsite()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                شارك المنصة مع أصدقائك
+            </button>
             <button class="btn-secondary" onclick="goBack()">تعديل الاسم</button>
         </div>
     </div>
@@ -154,56 +304,159 @@
         };
 
         function generateCard() {
-            if (!imageLoaded) { alert('جاري تحميل تصميم البطاقة...'); return; }
+            if (!imageLoaded) { alert('جاري تحميل تصميم البطاقة، يرجى المحاولة بعد ثانية...'); return; }
             const name = document.getElementById('nameInput').value.trim();
-            if(!name) { alert('الرجاء كتابة اسمك أولاً!'); return; }
+            if(!name) { alert('الرجاء كتابة اسمك أولاً في المربع المخصص!'); return; }
 
             canvas.width = image.width;
             canvas.height = image.height;
             ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-            // إعدادات الخط والطباعة
-            ctx.font = 'bold 55px Tajawal';
-            ctx.fillStyle = '#2c3e50'; 
+            let fontSize = 60; 
+            const maxTextWidth = canvas.width * 0.55; 
+            ctx.font = `bold ${fontSize}px Tajawal`;
+            let textWidth = ctx.measureText(name).width;
+
+            while (textWidth > maxTextWidth && fontSize > 25) {
+                fontSize -= 2; 
+                ctx.font = `bold ${fontSize}px Tajawal`;
+                textWidth = ctx.measureText(name).width;
+            }
+
+            ctx.fillStyle = '#0f3b5e'; /* لون متناسق مع تصميم النادي */
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             
-            // --- إحداثيات موقع الاسم المخصصة للمربع ---
-            // بناءً على الصورة، هذا الإحداثي يضع الاسم داخل المربع السفلي
-            const x = canvas.width / 2;
-            const y = canvas.height * 0.30; 
+            // --- إحداثيات موقع الاسم ليتوسط المربع في التصميم الجديد ---
+            const x = canvas.width / 2; 
+            const y = canvas.height * 0.675; // تم تعديله ليتناسب مع المربع السفلي 
             
             ctx.fillText(name, x, y);
 
             document.getElementById('inputPage').style.display = 'none';
             document.getElementById('resultPage').style.display = 'block';
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+
+            fireworks();
+        }
+
+        function fireworks() {
+            var duration = 3 * 1000; 
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 28, spread: 360, ticks: 60, zIndex: 10 };
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+                var particleCount = 45 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random() * 0.2 + 0.15, y: 0.95 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random() * 0.2 + 0.65, y: 0.95 } }));
+            }, 260);
         }
 
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
-            document.getElementById('themeBtn').innerText = document.body.classList.contains('dark-mode') ? "☀️" : "🌙";
+            const themeBtn = document.getElementById('themeBtn');
+            if(document.body.classList.contains('dark-mode')) {
+                themeBtn.innerText = "☀️";
+                themeBtn.title = "الوضع الفاتح ☀️";
+            } else {
+                themeBtn.innerText = "🌙";
+                themeBtn.title = "الوضع الليلي 🌙";
+            }
         }
 
+        function shareWebsite() {
+            const inviteText = `تفضل بتصميم بطاقة تهنئة عيد الأضحى المبارك باسمك مجاناً من خلال منصة نادي التمريض والعلوم الصحية عبر الرابط التالي:\n${window.location.href}`;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'تهاني المركز الإعلامي لفريق المفاجآت',
+                    text: inviteText,
+                    url: window.location.href
+                }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(inviteText).then(() => {
+                    alert("تم نسخ رابط المنصة مع نص الدعوة! يمكنك الآن لصقه في الواتساب وإرساله لأصدقائك. 🔗");
+                });
+            }
+        }
+
+        const bgCanvas = document.getElementById('bgCanvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        let particles = [];
+        
+        function resizeBg() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeBg);
+        resizeBg();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * bgCanvas.width;
+                this.y = bgCanvas.height + Math.random() * 100;
+                this.size = Math.random() * 3 + 1;
+                this.speed = Math.random() * 0.8 + 0.2;
+                this.alpha = Math.random() * 0.5 + 0.2;
+            }
+            update() {
+                this.y -= this.speed;
+                if (this.y < -10) { this.y = bgCanvas.height + 10; this.x = Math.random() * bgCanvas.width; }
+            }
+            draw() {
+                bgCtx.save();
+                bgCtx.globalAlpha = this.alpha;
+                bgCtx.fillStyle = '#1a5c8c';
+                bgCtx.beginPath(); bgCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2); bgCtx.fill();
+                bgCtx.restore();
+            }
+        }
+
+        for (let i = 0; i < 40; i++) { particles.push(new Particle()); }
+        function animateParticles() {
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
         async function shareCard() {
-            canvas.toBlob(async (blob) => {
-                const file = new File([blob], 'Greeting.png', { type: 'image/png' });
-                if (navigator.share && navigator.canShare({ files: [file] })) {
-                    await navigator.share({ files: [file], title: 'تهنئة العيد', text: 'كل عام وأنتم بخير!' });
-                } else { alert("جهازك لا يدعم المشاركة المباشرة، استخدم زر التحميل."); }
-            });
+            if (navigator.share) {
+                canvas.toBlob(async (blob) => {
+                    const file = new File([blob], 'Eid_Greeting.png', { type: 'image/png' });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                files: [file],
+                                title: 'تهنئة العيد - المركز الإعلامي لفريق المفاجآت',
+                                text: 'كل عام وأنتم بخير! ✨'
+                            });
+                        } catch (err) {}
+                    } else { alert("متصفحك لا يدعم مشاركة الصور المباشرة، يرجى استخدام زر التحميل."); }
+                });
+            } else { alert("جهازك لا يدعم المشاركة المباشرة، استخدم زر التحميل."); }
         }
 
         function copyGreetingText() {
             const userName = document.getElementById('nameInput').value.trim();
-            const text = `يطيب لي أن أرفع إليكم أصدق التهاني بمناسبة عيد الأضحى المبارك، أعاده الله علينا وعليكم بالخير.\n\nمحبكم: ${userName}\nالمركز الإعلامي لفريق المفاجآت 🎬`;
-            navigator.clipboard.writeText(text).then(() => alert("تم نسخ النص!"));
+            const textToCopy = `يطيب لي أن أرفع إليكم أصدق التهاني والتبريكات بمناسبة حلول عيد الأضحى المبارك، سائلاً المولى عز وجل أن يعيده علينا وعليكم باليُمن والبركات. وكل عام وأنتم بخير.\n\nمحبكم: ${userName}\nالمركز الإعلامي لفريق المفاجآت ⚕️`;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert("تم نسخ نص التهنئة الاحترافي! يمكنك الآن لصقه في محادثاتك.");
+            }).catch(err => alert("حدث خطأ أثناء نسخ النص."));
         }
+
+        const tiltContainer = document.getElementById('tiltContainer');
+        tiltContainer.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+            const xc = rect.width / 2; const yc = rect.height / 2;
+            canvas.style.transform = `rotateX(${(yc - y) / 12}deg) rotateY(${(x - xc) / 12}deg) scale(1.02)`;
+        });
+        tiltContainer.addEventListener('mouseleave', () => {
+            canvas.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+        });
 
         function downloadImage() {
             const link = document.createElement('a');
-            link.download = 'تهنئة_فريق_المفاجآت.png';
-            link.href = canvas.toDataURL('image/png', 1.0);
+            link.download = 'المركز_الإعلامي_لفريق_المفاجآت.png'; 
+            link.href = canvas.toDataURL('image/png', 1.0); 
             link.click();
         }
 
