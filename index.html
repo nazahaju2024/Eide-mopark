@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta property="og:title" content="بطاقة تهنئة العيد - المركز الإعلامي لفريق المفاجآت">
+    <meta property="og:description" content="أصدر بطاقة تهنئة عيد الأضحى المبارك باسمك وشاركها فوراً.">
+    <meta property="og:image" content="card.png">
+    <meta property="og:type" content="website">
+    
+    <link rel="icon" href="card.png" type="image/png">
+    
+    <title>تهنئة العيد - المركز الإعلامي لفريق المفاجآت</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #c0392b;
+            --success-color: #27ae60;
+            --share-color: #8e44ad;
+            --copy-color: #d35400;
+            --invite-color: #2980b9;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --text-color: #2c3e50;
+            --input-bg: rgba(255, 255, 255, 0.95);
+            --bg-overlay: rgba(240, 244, 248, 0.88);
+        }
+
+        body.dark-mode {
+            --primary-color: #ecf0f1;
+            --accent-color: #e74c3c;
+            --glass-bg: rgba(44, 62, 80, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-color: #ffffff;
+            --input-bg: rgba(52, 73, 94, 0.95);
+            --bg-overlay: rgba(30, 40, 50, 0.92);
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(var(--bg-overlay), var(--bg-overlay)), url('card.png') no-repeat center center fixed;
+            background-size: cover;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            transition: background 0.3s ease;
+        }
+
+        #bgCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f4f8; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease;
+        }
+        .loader-pulse { font-size: 22px; font-weight: 700; color: var(--primary-color); animation: pulse-text 1.5s infinite ease-in-out; margin-bottom: 15px; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(44, 62, 80, 0.1); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s infinite linear; }
+        @keyframes pulse-text { 0%, 100% { transform: scale(0.98); opacity: 0.6; } 50% { transform: scale(1.02); opacity: 1; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .top-controls { position: fixed; top: 20px; width: calc(100% - 40px); max-width: 440px; display: flex; justify-content: flex-end; z-index: 1000; pointer-events: none; }
+        .control-btn { background: var(--primary-color); color: white; border: none; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all 0.3s ease; pointer-events: auto; }
+        .control-btn:hover { transform: scale(1.1); }
+
+        .container {
+            width: 100%; max-width: 440px; background: var(--glass-bg); backdrop-filter: blur(25px); border: 1px solid var(--glass-border);
+            padding: 35px 20px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1); box-sizing: border-box;
+        }
+
+        h2 { color: var(--text-color); margin-top: 0; margin-bottom: 25px; font-size: 22px; font-weight: 700; }
+
+        input[type="text"] {
+            width: 100%; padding: 16px; font-size: 16px; border: 2px solid rgba(44, 62, 80, 0.15); border-radius: 14px;
+            margin-bottom: 22px; outline: none; background: var(--input-bg); color: var(--text-color); text-align: center;
+        }
+
+        .buttons-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .buttons-grid.two-cols { grid-template-columns: 1fr 1fr; }
+
+        button {
+            border: none; padding: 14px 10px; font-size: 16px; font-weight: 700; border-radius: 12px; cursor: pointer;
+            transition: all 0.3s ease; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; color: white;
+        }
+        button:hover { transform: translateY(-2px); }
+
+        .btn-primary { background-color: var(--accent-color); font-size: 18px; padding: 15px; }
+        .btn-success { background-color: var(--success-color); }
+        .btn-share { background-color: var(--share-color); }
+        .btn-copy { background-color: var(--copy-color); }
+        .btn-invite { background-color: var(--invite-color); }
+        .btn-secondary { background-color: #7f8c8d; }
+
+        .tilt-wrapper { perspective: 1000px; margin: 15px 0 25px 0; display: inline-block; width: 100%; }
+        canvas#canvas { width: 100%; height: auto; border-radius: 18px; box-shadow: 0 12px 28px rgba(0,0,0,0.18); transition: transform 0.1s ease-out; }
+        #resultPage { display: none; }
+    </style>
+</head>
+<body>
+
+    <canvas id="bgCanvas"></canvas>
+
+    <div id="loader">
+        <div class="loader-pulse">المركز الإعلامي لفريق المفاجآت</div>
+        <div class="spinner"></div>
+    </div>
+
+    <div class="top-controls">
+        <button class="control-btn" id="themeBtn" onclick="toggleDarkMode()" title="الوضع الليلي 🌙">🌙</button>
+    </div>
+
+    <div id="inputPage" class="container">
+        <h2>أصدر بطاقة التهنئة الخاصة بك</h2>
+        <input type="text" id="nameInput" placeholder="اكتب اسمك الكريم هنا..." maxlength="40">
+        <button class="btn-primary" onclick="generateCard()">إنشاء البطاقة الاحترافية</button>
+    </div>
+
+    <div id="resultPage" class="container">
+        <h2>كل عام وأنت بخير! 🎉</h2>
+        <div class="tilt-wrapper" id="tiltContainer">
+            <canvas id="canvas"></canvas>
+        </div>
+        <div class="buttons-grid two-cols">
+            <button class="btn-share" onclick="shareCard()">مشاركة البطاقة</button>
+            <button class="btn-success" onclick="downloadImage()">تحميل الصورة</button>
+        </div>
+        <div class="buttons-grid" style="margin-top: 12px;">
+            <button class="btn-copy" onclick="copyGreetingText()">نسخ نص التهنئة</button>
+            <button class="btn-secondary" onclick="goBack()">تعديل الاسم</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const image = new Image();
+        image.src = 'card.png'; 
+
+        let imageLoaded = false;
+        image.onload = function() {
+            imageLoaded = true;
+            document.getElementById('loader').style.opacity = '0';
+            setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 500);
+        };
+
+        function generateCard() {
+            if (!imageLoaded) { alert('جاري تحميل تصميم البطاقة...'); return; }
+            const name = document.getElementById('nameInput').value.trim();
+            if(!name) { alert('الرجاء كتابة اسمك أولاً!'); return; }
+
+            canvas.width = image.width;
+            canvas.height = image.height;
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+            // إعدادات الخط والطباعة
+            ctx.font = 'bold 55px Tajawal';
+            ctx.fillStyle = '#2c3e50'; 
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // --- إحداثيات موقع الاسم المخصصة للمربع ---
+            // بناءً على الصورة، هذا الإحداثي يضع الاسم داخل المربع السفلي
+            const x = canvas.width / 2;
+            const y = canvas.height * 0.82; 
+            
+            ctx.fillText(name, x, y);
+
+            document.getElementById('inputPage').style.display = 'none';
+            document.getElementById('resultPage').style.display = 'block';
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            document.getElementById('themeBtn').innerText = document.body.classList.contains('dark-mode') ? "☀️" : "🌙";
+        }
+
+        async function shareCard() {
+            canvas.toBlob(async (blob) => {
+                const file = new File([blob], 'Greeting.png', { type: 'image/png' });
+                if (navigator.share && navigator.canShare({ files: [file] })) {
+                    await navigator.share({ files: [file], title: 'تهنئة العيد', text: 'كل عام وأنتم بخير!' });
+                } else { alert("جهازك لا يدعم المشاركة المباشرة، استخدم زر التحميل."); }
+            });
+        }
+
+        function copyGreetingText() {
+            const userName = document.getElementById('nameInput').value.trim();
+            const text = `يطيب لي أن أرفع إليكم أصدق التهاني بمناسبة عيد الأضحى المبارك، أعاده الله علينا وعليكم بالخير.\n\nمحبكم: ${userName}\nالمركز الإعلامي لفريق المفاجآت 🎬`;
+            navigator.clipboard.writeText(text).then(() => alert("تم نسخ النص!"));
+        }
+
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.download = 'تهنئة_فريق_المفاجآت.png';
+            link.href = canvas.toDataURL('image/png', 1.0);
+            link.click();
+        }
+
+        function goBack() {
+            document.getElementById('resultPage').style.display = 'none';
+            document.getElementById('inputPage').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
